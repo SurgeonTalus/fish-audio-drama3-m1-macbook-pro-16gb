@@ -156,6 +156,55 @@ Use the `metrics.rtf` value instead.
 
 ---
 
+## Comparison with CosyVoice3 and Chatterbox v3
+
+All three models were tested on the **same machine**, with the **same text**,
+the **same reference clip** and the **same seed**.
+
+| Model | Language | WER | Auto-detected | RTF | Peak RAM |
+|---|---|---|---|---|---|
+| **Drama 3 Q4_K_S** | Norwegian | **18,2 %** | `no` | 27,5 | 6,7 GB |
+| **Drama 3 Q4_K_S** | Norwegian | 36,4 % | `no` | 26,3 | 6,9 GB |
+| **CosyVoice3 + LoRA** | Norwegian | 31,8 % | `no` | **10,8** | ~7 GB |
+| **Chatterbox v3** | Norwegian | 59,1 % | `no` | 21,8 | — |
+| **Drama 3 IQ3_XXS** | Norwegian | 59,1 % | `no` | **11,2** | 10,3 GB |
+| **Drama 3 Q4_K_S** | English | **6,0 %** | `en` | 28,8 | 6,9 GB |
+| **CosyVoice3 + LoRA** | English | 11,9 % | **`sv`** | 7,7 | ~7 GB |
+| **Chatterbox v3** | English | 14,9 % | **`no`** | **5,8** | — |
+
+**WER** = word error rate (lower is better). **Auto-detected** is what Whisper
+itself identifies in the audio — it reveals accent drift. **RTF** = real-time
+factor (lower is better, 1.0 = real time).
+
+### The accent does not hold
+
+The auto-detected column is the most important result. When CosyVoice3 and
+Chatterbox are asked to read **English** using a *Norwegian* reference, they
+fall out of English — CosyVoice3 drifts to **Swedish**, Chatterbox to
+**Norwegian**. Drama 3 holds `en`.
+
+Both are **language-bound to the reference**. That is what you want when you
+want Norwegian, and not what you want when you want English. Drama 3 was
+trained on 83 languages and holds the language regardless.
+
+### Speed and cost
+
+| Model | Norwegian (9 s) | English (33 s) | Disk read | Size |
+|---|---|---|---|---|
+| **CosyVoice3 + LoRA** | **113 s** | 243 s | 0 | 0,5B (9,1 GB) |
+| **Chatterbox v3** | 164 s | 177 s | 0 | ~1,5 GB |
+| **Drama 3 IQ3_XXS** | 104 s | — | 0 | 9,74 GiB |
+| **Drama 3 Q4_K_S** | 221 s | 953 s | **351 GB** | 21,78 GiB |
+
+CosyVoice3 is 2,4x faster than Drama 3 on Norwegian. Drama 3 Q4_K_S is 3–4x
+more expensive per second of speech, because the experts have to be read from
+disk.
+
+Full analysis with transcriptions and F0 measurements:
+[`docs/SAMMENLIGNING.md`](docs/SAMMENLIGNING.md)
+
+---
+
 ## Speed: Metal vs CPU
 
 Measured with identical text, seed and settings. RTF is real-time factor
