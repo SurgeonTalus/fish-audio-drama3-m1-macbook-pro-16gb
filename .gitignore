@@ -1,0 +1,10 @@
+# Large binaries — download with the commands in README.md
+bin/
+models/
+out/
+
+# The reference voice is personal; keep it out of version control by default.
+# The copy in audio/ is included deliberately as test material.
+ref/
+
+.DS_Store
